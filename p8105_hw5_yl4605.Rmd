@@ -7,6 +7,8 @@ output: github_document
 
 ```{r setup, include = FALSE}
 library(tidyverse)
+library(rvest)
+set.seed(7)
 knitr::opts_chunk$set(
   fig.width = 6,
   fig.asp = .6,
@@ -138,5 +140,87 @@ tidy_df %>%
   ggplot(aes(x = week, y = value, group = arm, color = arm))+
   geom_line()
 ```
+Make a spaghetti plot showing observations on each subject over time, and comment on differences between groups
+
+
+
 
 ## Problem 3
+
+generate 5000 datasets 
+
+write a function and simulate a lot
+
+```{r}
+sim_t_test = function(samp_size = 30, mu = 0, sigma = 5) {
+  
+  sim_data = tibble(
+    x = rnorm(samp_size, mean = mu, sd = sigma),
+  )
+  
+  sim_data  = t.test(sim_data) %>% 
+  broom::tidy() %>% 
+  select(estimate, p.value)
+  
+  sim_data
+  
+  
+}
+```
+
+```{r}
+sim_results = 
+  tibble(mu_true = c(0,1,2,3,4,5,6)) %>% 
+  mutate(
+    output_lists = map(.x = mu_true, ~rerun(5000, sim_t_test(mu = .x))),
+    estimate_dfs = map(output_lists, bind_rows)) %>% 
+  select(-output_lists) %>% 
+  unnest(estimate_dfs)
+```
+
+times of the null was rejected
+
+```{r}
+plot_data_df = 
+sim_results %>% 
+    group_by(mu_true) %>% 
+    filter(p.value<0.05) %>% 
+    summarize(
+      times = n(),
+      times = times/5000
+      )
+  
+plot_data_df %>% 
+  ggplot(aes(x = mu_true, y = times))+
+    geom_point()
+
+```
+
+Describe the association between effect size and power.
+
+
+
+
+```{r}
+plot2_data = 
+sim_results %>% 
+  group_by(mu_true) %>% 
+  summarize(estimate_mu = mean(estimate))
+
+plot2_data %>% 
+ggplot(aes(x = mu_true, y = estimate_mu))+
+  geom_line()
+```
+
+```{r}
+plot3_data = 
+  sim_results %>% 
+    group_by(mu_true) %>% 
+    filter(p.value<0.05) %>% 
+    summarize(estimate_mu = mean(estimate))
+
+plot3_data %>% 
+ggplot(aes(x = mu_true, y = estimate_mu))+
+  geom_line()
+```
+

@@ -140,7 +140,10 @@ tidy_df %>%
   ggplot(aes(x = week, y = value, group = arm, color = arm))+
   geom_line()
 ```
-Make a spaghetti plot showing observations on each subject over time, and comment on differences between groups
+Make a spaghetti plot showing observations on each subject over time, and comment on differences between groups.
+
+The tendency of control groups is similar and the tendency of experiment groups is similar. At the beginning of this experiment, the values of two kinds of groups are similar. Generally, the results of experiment groups are higher than the control groups. With time goes by, the general numeric results of experiment group obviously became higher. 
+
 
 
 
@@ -198,6 +201,7 @@ plot_data_df %>%
 
 Describe the association between effect size and power.
 
+When the mu_true gets bigger, the proportion of times the null was rejected gets bigger. And when mu_true equals 4, the proportion gets around 1. Since the hypothesis is mu = 0, when mu_true gets bigger, the probability of sample's mu equals to 0 is getting smaller and smaller. 
 
 
 
@@ -224,3 +228,4 @@ ggplot(aes(x = mu_true, y = estimate_mu))+
   geom_line()
 ```
 
+No. Since the null hypothesis is mu = 0, so we keep the sample data of mu which is not close to 0 at the significance level of 0.05. When the mu_true is close to 0 and bigger than 0, the estimated_mu will be bigger than mu_true. That's why when mu_true equals to 1, the difference of estimate_mu and mu_true is big. When the mu_true gets much bigger than 0, the difference of mu_true and estimate_mu will be similar.
